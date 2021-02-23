@@ -1,0 +1,2 @@
+C:\PROGRA~2\Dev-Cpp\MinGW64\bin\ar.exe qc libleptjson.a  CMakeFiles/leptjson.dir/leptjson.c.obj
+C:\PROGRA~2\Dev-Cpp\MinGW64\bin\ranlib.exe libleptjson.a
