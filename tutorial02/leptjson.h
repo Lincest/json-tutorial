@@ -4,7 +4,7 @@
 typedef enum { LEPT_NULL, LEPT_FALSE, LEPT_TRUE, LEPT_NUMBER, LEPT_STRING, LEPT_ARRAY, LEPT_OBJECT } lept_type;
 
 typedef struct {
-    double n;
+    double n; /* json数字, 仅当type == LEPT_NUMBER时, n才表示json数字的数值 */
     lept_type type;
 }lept_value;
 
