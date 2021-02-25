@@ -3,9 +3,9 @@
 
 - [x] **tutorial02** (2020.02.23)
 
-- [ ] **tutorial03**
+- [x] **tutorial03** (2020.02.24)
 
-- [ ] **tutorial04**
+- [x] **tutorial04** (2020.02.25)
 
 - [ ] **tutorial05**
 

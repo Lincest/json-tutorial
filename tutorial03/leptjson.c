@@ -20,6 +20,7 @@ typedef struct {
     size_t size, top;
 }lept_context;
 
+/* 返回数据起始的指针 */
 static void* lept_context_push(lept_context* c, size_t size) {
     void* ret;
     assert(size > 0);
@@ -99,9 +100,24 @@ static int lept_parse_string(lept_context* c, lept_value* v) {
                 lept_set_string(v, (const char*)lept_context_pop(c, len), len);
                 c->json = p;
                 return LEPT_PARSE_OK;
+            /* 缺少右引号 */
             case '\0':
                 c->top = head;
                 return LEPT_PARSE_MISS_QUOTATION_MARK;
+            case '\\':
+                switch (*p++) {
+                    case '\"': PUTC(c, '\"');
+                    case '\\': PUTC(c, '\\');
+                    case '/': PUTC(c, '/');
+                    case 'b': PUTC(c, '\b');
+                    case 'f': PUTC(c, '\f');
+                    case 'n': PUTC(c, '\n');
+                    case 'r': PUTC(c, '\r');
+                    case 't': PUTC(c, '\t');
+                    default:
+                        c->top = head;
+                        return LEPT_PARSE_INVALID_STRING_ESCAPE;
+                }
             default:
                 PUTC(c, ch);
         }
@@ -144,7 +160,7 @@ void lept_free(lept_value* v) {
     assert(v != NULL);
     if (v->type == LEPT_STRING)
         free(v->u.s.s);
-    v->type = LEPT_NULL;
+    v->type = LEPT_NULL; /* 避免重复释放 */
 }
 
 lept_type lept_get_type(const lept_value* v) {
@@ -181,8 +197,10 @@ size_t lept_get_string_length(const lept_value* v) {
 }
 
 void lept_set_string(lept_value* v, const char* s, size_t len) {
+    /* 非空指针或者零长度字符串都是合法的 */
     assert(v != NULL && (s != NULL || len == 0));
     lept_free(v);
+    /* len + 1因为结尾空字符 */
     v->u.s.s = (char*)malloc(len + 1);
     memcpy(v->u.s.s, s, len);
     v->u.s.s[len] = '\0';
